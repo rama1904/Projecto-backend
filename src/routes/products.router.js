@@ -1,54 +1,64 @@
 const express = require("express");
 const router = express.Router();
+const Product = require("../models/Product");
+const path = require("path");
+const fs = require("fs");
 
+// Ruta para vista con Handlebars
+router.get("/view", (req, res) => {
+  const dataPath = path.join(__dirname, "../data/products.json");
+  const products = JSON.parse(fs.readFileSync(dataPath, "utf-8"));
 
-const products = [
-  { id: 1, title: 'Producto A', description: 'Desc A', code: 'PA1', price: 100, status: true, stock: 10, category: 'cat1', thumbnails: [] },
-  { id: 2, title: 'Producto B', description: 'Desc B', code: 'PB2', price: 150, status: true, stock: 5, category: 'cat2', thumbnails: [] },
-];
-
-let currentId = products.length > 0 ? products[products.length - 1].id : 0;
-const generatedId = () => ++currentId;
-
-
-router.post("/", (req, res) => {
-  const { title, description, code, price, stock, category, thumbnails } = req.body;
-
-  if (!title || !description || !code || price == null || stock == null || !category) {
-    return res.status(400).json({ error: 'Faltan campos obligatorios.' });
-  }
-
-  const newProduct = {
-    id: generatedId(),
-    title,
-    description,
-    code,
-    price,
-    status: true,
-    stock,
-    category,
-    thumbnails: thumbnails || [],
-  };
-
-  products.push(newProduct);
-  res.status(201).json({ message: "Producto agregado correctamente", product: newProduct });
+  res.render("productDisplay", { products }); // Asegurate de tener esta vista
 });
 
+//  Ruta paginada para la API
+router.get("/", async (req, res) => {
+  try {
+    const { limit = 10, page = 1, sort, query } = req.query;
 
-router.put("/:pid", (req, res) => {
-  const pid = parseInt(req.params.pid);
-  const updateData = req.body;
+    const filter = query
+      ? {
+          $or: [
+            { category: { $regex: query, $options: "i" } },
+            { title: { $regex: query, $options: "i" } }
+          ]
+        }
+      : {};
 
-  const index = products.findIndex(p => p.id === pid);
-  if (index === -1) {
-    return res.status(404).json({ error: "Producto no encontrado" });
+    const options = {
+      limit: parseInt(limit),
+      page: parseInt(page),
+      sort: sort === "asc" ? { price: 1 } : sort === "desc" ? { price: -1 } : {}
+    };
+
+    const result = await Product.paginate(filter, options);
+
+    const buildLink = (p) => {
+      if (!p) return null;
+      const base = `/api/products`;
+      let link = `${base}?page=${p}&limit=${limit}`;
+      if (sort) link += `&sort=${sort}`;
+      if (query) link += `&query=${query}`;
+      return link;
+    };
+
+    res.json({
+      status: "success",
+      payload: result.docs,
+      totalPages: result.totalPages,
+      prevPage: result.prevPage,
+      nextPage: result.nextPage,
+      page: result.page,
+      hasPrevPage: result.hasPrevPage,
+      hasNextPage: result.hasNextPage,
+      prevLink: buildLink(result.prevPage),
+      nextLink: buildLink(result.nextPage)
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ status: "error", message: "Error al obtener productos" });
   }
-
-  
-  delete updateData.id;
-
-  products[index] = { ...products[index], ...updateData };
-  res.status(200).json({ message: "Producto actualizado", product: products[index] });
 });
 
 module.exports = router;

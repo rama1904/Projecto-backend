@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "name": "Botines Adidas",
+    "image": "botines1.jpg",
+    "price": 13000
+  },
+  {
+    "id": 2,
+    "name": "Pelota Adidas",
+    "image": "pelota1.jpg",
+    "price": 8000
+  },
+
+{
+    "id": 1,
+    "name": "Botines Adidas",
+    "image": "botines2.jpg",
+    "price": 15000
+  },
+  {
+    "id": 2,
+    "name": "Pelota Adidas",
+    "image": "pelota2.jpg",
+    "price": 9000
+  },
+
+
+  {
+    "id": 1,
+    "name": "Camiseta Chelsea",
+    "image": "camiseta2.jpg",
+    "price": 10000
+  },
+  {
+    "id": 2,
+    "name": "Camiseta Paris-Saint Germain",
+    "image": "camiseta2.jpg",
+    "price": 11000
+  }
+
+
+]
+
+  
+
