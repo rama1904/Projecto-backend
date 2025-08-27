@@ -1,8 +1,8 @@
-const express = require("express");
+import express from "express"
 const router = express.Router();
-const Product = require("../models/Product");
-const path = require("path");
-const fs = require("fs");
+import Product from "../models/products.model.js";
+import path from "path";
+import fs from "fs";
 
 // Ruta para vista con Handlebars
 router.get("/view", (req, res) => {
@@ -61,4 +61,4 @@ router.get("/", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

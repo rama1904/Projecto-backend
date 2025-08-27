@@ -1,4 +1,5 @@
-const express = require("express");
+import express from "express"
+
 const router = express.Router();
 
 let productos = [];
@@ -11,4 +12,4 @@ router.get("/raltimeproducts" , (req,res) =>{
     res.render("realTimeProducts");
 });
 
-module.export = router;
+export default router;

@@ -1,11 +1,13 @@
 
 import express from "express";
-import { engine } from "express-handlebars";
+import  handlebars from "express-handlebars";
 import path from "path";
 import mongoose from "mongoose";
 import { fileURLToPath } from "url";
 import http from "http";
 import { Server as SocketIOServer } from "socket.io";
+
+
 
 // MONGOOSE
 mongoose.connect("mongodb://127.0.0.1:27017/ecommerce-futbol", {
@@ -29,9 +31,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public"))); 
 
 // HANDLEBARS 
-app.engine("handlebars", engine());
+app.engine("handlebars",handlebars.engine())
+app.set("views",__dirname +"/views");
 app.set("view engine", "handlebars");
-app.set("views", path.join(__dirname, "views")); 
 
 // ROUTERS 
 import productsRouter from "./routes/products.router.js"; 
